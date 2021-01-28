@@ -1,0 +1,5 @@
+1 - comment
+procedure p;
+Select p;
+echo
+5000
