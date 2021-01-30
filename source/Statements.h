@@ -19,7 +19,6 @@ public:
 	int statementID;
 	int statementRowID;
 	StatementList statementType;
-	std::string statementContent;
 	std::string parentProcedure;
 
 	struct Variable
@@ -32,22 +31,30 @@ public:
 	struct ReadStatement
 	{
 		int readID;
+		int rowID;
+		std::string variableName;
 	}read;
 
 	struct PrintStatement
 	{
 		int printID;
+		int rowID;
+		std::string variableName;
+		
 	}print;
 
 	struct ConstantStatement
 	{
 		int constantID;
+		int rowID;
+		int variableValue;
 	}constant;
+	
 	struct AssignStatement
 	{
 		int assignID;
-		std::string symbol;
-		std::string assignValue;
+		int rowID;
+		std::string variableName;
 	}assign;
 };
 

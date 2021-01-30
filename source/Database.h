@@ -21,12 +21,16 @@ public:
 
 	// method to get all the procedures from the database
 	static void getProcedures(vector<string>& results);
+	static void getConstant(vector<string>& results);
+	static void getVariable(vector<string>& results);
 
 	//template<typename T>
 	static void pushToDB(Statement* statement, StatementList statementType);
 
 	//template<typename T>
-	static void AcquireID(Statement* statement);
+	static bool isVariableNameExist(string variableName);
+
+	static void getResultString(vector<string>& results, StatementList statement);
 private:
 	// the connection pointer to the database
 	static sqlite3* dbConnection; 

@@ -16,4 +16,5 @@ public:
 
 	// method for evaluating a query
 	void evaluate(string query, vector<string>& results);
+	vector<string> stringProcessing(vector<string> tokens);
 };

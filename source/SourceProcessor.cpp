@@ -1,23 +1,23 @@
 #include "SourceProcessor.h"
 #include <map>
 
-//test for insert ROW ID + Content to DB, currently no need to deal with that
-void pushRowInfoToTable(map<int, vector<string>> keyValuePair)
-{
-	for (const auto& pair : keyValuePair)
-	{
-		const int currentRowID = pair.first;
-		string content = "";
-		for (unsigned int i = 0; i < pair.second.size(); i++)
-		{
-			if (i == pair.second.size() - 1)
-			{
-				content += pair.second[i];
-			}
-			content += (pair.second[i] + " ");
-		}
-	}
-}
+////test for insert ROW ID + Content to DB, currently no need to deal with that
+//void pushRowInfoToTable(map<int, vector<string>> keyValuePair)
+//{
+//	for (const auto& pair : keyValuePair)
+//	{
+//		const int currentRowID = pair.first;
+//		string content;
+//		for (unsigned int i = 0; i < pair.second.size(); i++)
+//		{
+//			if (i == pair.second.size() - 1)
+//			{
+//				content += pair.second[i];
+//			}
+//			content += (pair.second[i] + " ");
+//		}
+//	}
+//}
 
 // method for processing the source program
 // This method currently only inserts the procedure name into the database
@@ -37,9 +37,8 @@ void SourceProcessor::process(string program) {
 	string procedureName = keyValuePair[0].at(1);
 	// insert the procedure into the database
 	Database::insertProcedure(procedureName);
-	pushRowInfoToTable(keyValuePair);
+	//pushRowInfoToTable(keyValuePair);
 	stringProcessing(keyValuePair, procedureName);
-	
 }
 
 
@@ -60,8 +59,6 @@ StatementList ConvertStringToEnum(string textBlock)
 
 void SourceProcessor::stringProcessing(map<int, vector<string>> keyValuePair, string parentProcedure)
 {
-	
-	//Variable* variable = NULL;
 	int statementID = 0;
 	int variableID = 0;
 	int tableIndex = 0;//will create function in DB to get count of current table in future;
@@ -73,7 +70,6 @@ void SourceProcessor::stringProcessing(map<int, vector<string>> keyValuePair, st
 		
 		for (unsigned i = 0; i < tokens.size(); i++)
 		{
-
 			Statement* statement = new Statement();
 
 			switch (ConvertStringToEnum(tokens[i]))
@@ -81,41 +77,41 @@ void SourceProcessor::stringProcessing(map<int, vector<string>> keyValuePair, st
 			case StatementList::READ:
 				//fill up information
 				statement->statementID = statementID++;
-				statement->statementType = StatementList::READ;
 				statement->statementRowID = currentRowID;
+				statement->statementType = StatementList::READ;
 				statement->parentProcedure = parentProcedure;
-				statement->variable.variableID = variableID++;
 				statement->variable.variableValue = NULL;
 				statement->variable.variableName = tokens[i + 1];
-				statement->read.readID = tableIndex++;
+				statement->read.variableName = statement->variable.variableName;
+				statement->read.rowID = currentRowID;
 
 				//upload to DB
 				Database::pushToDB(statement, StatementList::READ);
 				break;
-			case StatementList::PRINT:  // NOLINT(bugprone-branch-clone)
+			case StatementList::PRINT:
 				statement->statementID = statementID++;
-				statement->statementType = StatementList::READ;
 				statement->statementRowID = currentRowID;
+				statement->statementType = StatementList::PRINT;
 				statement->parentProcedure = parentProcedure;
-				statement->variable.variableID = variableID++;
 				statement->variable.variableValue = NULL;
 				statement->variable.variableName = tokens[i + 1];
-				statement->print.printID = tableIndex++;
+				statement->print.variableName = statement->variable.variableName;
+				statement->print.rowID = currentRowID;
 
 				//upload to DB
 				Database::pushToDB(statement, StatementList::PRINT);
 				break;
 			case StatementList::ASSIGN:
 				statement->statementID = statementID++;
-				statement->statementType = StatementList::READ;
+				statement->statementType = StatementList::ASSIGN;
 				statement->statementRowID = currentRowID;
 				statement->parentProcedure = parentProcedure;
-				statement->variable.variableID = variableID++;
-				statement->variable.variableValue = NULL; // need to cal before UPDATE DB
+				statement->variable.variableValue = NULL;
 				statement->variable.variableName = tokens[i - 1];
-				statement->assign.assignID = tableIndex++;
-				statement->assign.symbol = tokens[i];
-				statement->assign.assignValue = tokens[i + 1];
+				statement->assign.variableName = statement->variable.variableName;
+				statement->assign.rowID = currentRowID;
+				statement->constant.variableValue = stoi(tokens[i + 1]);
+				statement->constant.rowID = currentRowID;
 				//upload to DB
 				Database::pushToDB(statement, StatementList::ASSIGN);
 				break;

@@ -33,8 +33,53 @@ void QueryProcessor::evaluate(string query, vector<string>& output) {
 		Database::getProcedures(databaseResults);
 	}
 
+	databaseResults = stringProcessing(tokens);
 	// post process the results to fill in the output vector
 	for (string databaseResult : databaseResults) {
 		output.push_back(databaseResult);
 	}
+}
+
+vector<string> QueryProcessor::stringProcessing(vector<string> tokens)
+{
+	vector<string> result;
+	for(auto& token : tokens)
+	{
+		if (token == "procedure")
+		{
+			Database::getProcedures(result);
+			continue;
+		}
+		if (token == "print")
+		{
+			Database::getResultString(result, StatementList::PRINT);
+			continue;
+		}
+		if (token == "read")
+		{
+			Database::getResultString(result, StatementList::READ);
+			continue;
+		}
+		if (token == "assign")
+		{
+			Database::getResultString(result, StatementList::ASSIGN);
+			continue;
+		}
+		if (token == "statement")
+		{
+			Database::getResultString(result, StatementList::STMT);
+			continue;
+		}
+		if (token == "constant")
+		{
+			Database::getConstant(result);
+			continue;
+		}
+		if (token == "variable")
+		{
+			Database::getVariable(result);	
+		}
+		
+	}
+	return result;
 }
